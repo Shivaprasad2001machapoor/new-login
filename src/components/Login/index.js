@@ -3,10 +3,12 @@ import Cookies from 'js-cookie'
 import './index.css'
 
 class Login extends Component {
-  onSubmitSuccess = jwtToken => {
+  state = {username: 'rahul', password: 'rahul@2021'}
+
+  onSubmitSuccess = jwtTkoken => {
     const {history} = this.props
 
-    Cookies.set('jwt_token', jwtToken, {
+    Cookies.set('jwt_token', jwtTkoken, {
       expires: 30,
       path: '/',
     })
@@ -15,27 +17,17 @@ class Login extends Component {
 
   submitForm = async event => {
     event.preventDefault()
+    const {username, password} = this.state
+    const userDetails = {username, password}
     const url = 'https://apis.ccbp.in/login'
-    const requestBody = {}
     const options = {
       method: 'POST',
-      body: JSON.stringify(requestBody),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      body: JSON.stringify(userDetails),
     }
-
-    try {
-      const response = await fetch(url, options)
-
-      if (response.ok) {
-        const data = await response.json()
-        this.onSubmitSuccess(data.jwt_token)
-      } else {
-        console.error('Login failed')
-      }
-    } catch (error) {
-      console.error('Network error:', error)
+    const response = await fetch(url, options)
+    const data = await response.json()
+    if (response.ok === true) {
+      this.onSubmitSuccess(data.jwt_token)
     }
   }
 
